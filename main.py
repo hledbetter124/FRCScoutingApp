@@ -1,25 +1,14 @@
-from openpyxl import *
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 from tkinter import *
+from openpyxl import *
 
-badwb = load_workbook('badTeams.xlsx')
-goodwb = load_workbook('goodTeams.xlsx')
-badSheet  = badwb.active
+gauth = GoogleAuth()
+gauth.LocalWebserverAuth()
+drive = GoogleDrive(gauth)
+
+goodwb = load_workbook('teams.xlsx')
 goodSheet = goodwb.active
-def badExcel():
-    badSheet.column_dimensions['A'].width = 10
-    badSheet.column_dimensions['B'].width = 10
-    badSheet.column_dimensions['C'].width = 10
-    badSheet.column_dimensions['D'].width = 10
-    badSheet.column_dimensions['E'].width = 20
-    badSheet.column_dimensions['F'].width = 20
-    badSheet.column_dimensions['G'].width = 10
-    badSheet.cell(row=1, column=1).value = "Team #"
-    badSheet.cell(row=1, column=2).value = "ballsScoredLower"
-    badSheet.cell(row=1, column=3).value = "ballsScoredUpper"
-    badSheet.cell(row=1, column=4).value = "Highest Climb Level"
-    badSheet.cell(row=1, column=5).value = "School"
-    badSheet.cell(row=1, column=6).value = "Student or Parent Led"
-    badSheet.cell(row=1, column=7).value = "bad or Good"
 def goodExcel():
     goodSheet.column_dimensions['A'].width = 10
     goodSheet.column_dimensions['B'].width = 10
@@ -27,14 +16,12 @@ def goodExcel():
     goodSheet.column_dimensions['D'].width = 10
     goodSheet.column_dimensions['E'].width = 20
     goodSheet.column_dimensions['F'].width = 20
-    goodSheet.column_dimensions['G'].width = 10
     goodSheet.cell(row=1, column=1).value = "Team #"
     goodSheet.cell(row=1, column=2).value = "ballsScoredLower"
     goodSheet.cell(row=1, column=3).value = "ballsScoredUpper"
     goodSheet.cell(row=1, column=4).value = "Highest Climb Level"
     goodSheet.cell(row=1, column=5).value = "School"
     goodSheet.cell(row=1, column=6).value = "Student or Parent Led"
-    goodSheet.cell(row=1, column=7).value = "bad or Good"
 def focus1(event):
     ballsScoredLower.focus_set()
 def focus2(event):
@@ -55,29 +42,7 @@ def clear():
     school.delete(0, END)
     studentOrParentLed.delete(0, END)
     badOrGood.delete(0, END)
-def bad():
-    if (teamNum.get() == "" and
-        ballsScoredLower.get() == "" and
-        ballsScoredUpper.get() == "" and
-        climbLevel.get() == "" and
-        school.get() == "" and
-        studentOrParentLed.get() == "" and
-        badOrGood.get() == ""):
-        print("empty input")
-    else:
-        current_row = badSheet.max_row
-        current_column = badSheet.max_column
-        badSheet.cell(row=current_row + 1, column=1).value = teamNum.get()
-        badSheet.cell(row=current_row + 1, column=2).value = lowerCount.get()
-        badSheet.cell(row=current_row + 1, column=3).value = upperCount.get()
-        badSheet.cell(row=current_row + 1, column=4).value = climbLevel.get()
-        badSheet.cell(row=current_row + 1, column=5).value = school.get()
-        badSheet.cell(row=current_row + 1, column=6).value = studentOrParentLed.get()
-        badSheet.cell(row=current_row + 1, column=7).value = badOrGood.get()
-        badwb.save('badTeams.xlsx')
-        teamNum.focus_set()
-        clear()
-def good():
+def sheet():
     if (teamNum.get() == "" and
         ballsScoredLower.get() == "" and
         ballsScoredUpper.get() == "" and
@@ -86,15 +51,15 @@ def good():
         studentOrParentLed.get() == ""):
         print("empty input")
     else:
-        current_row = badSheet.max_row
-        current_column = badSheet.max_column
+        current_row = goodSheet.max_row
+        current_column = goodSheet.max_column
         goodSheet.cell(row=current_row + 1, column=1).value = teamNum.get()
         goodSheet.cell(row=current_row + 1, column=2).value = lowerCount
         goodSheet.cell(row=current_row + 1, column=3).value = upperCount
         goodSheet.cell(row=current_row + 1, column=4).value = climbLevel.get()
         goodSheet.cell(row=current_row + 1, column=5).value = school.get()
         goodSheet.cell(row=current_row + 1, column=6).value = studentOrParentLed.get()
-        goodwb.save('goodTeams.xlsx')
+        goodwb.save('teams.xlsx')
         teamNum.focus_set()
         clear()
 def upperButtonPress():
@@ -103,6 +68,11 @@ def upperButtonPress():
 def lowerButtonPress():
     global lowerCount
     lowerCount = 1 + lowerCount
+def updateFile():
+    file5 = drive.CreateFile()
+    # Read file and set it as a content of this instance.
+    file5.SetContentFile('teams.xlsx')
+    file5.Upload() # Upload the file.
 
 if __name__ == "__main__":
     lowerCount = 0
@@ -112,7 +82,6 @@ if __name__ == "__main__":
     root.title("FRC Scouting")
     # set the configuration of GUI window
     root.geometry("400x700")
-    badExcel()
     goodExcel()
     heading = Label(root, text="Scouting Form", bg="white")
     num= Label(root, text="Team Number", bg="white")
@@ -121,7 +90,7 @@ if __name__ == "__main__":
     climb = Label(root, text="Climb Level", bg="White")
     whatSchool = Label(root, text="School", bg="White")
     studentOrParent = Label(root, text="Student Or Parent Led", bg="White")
-    theDecision = Label(root, text="Are they bad or good?", bg="white")
+    theDecision = Label(root, text="Save after each match", bg="white")
     heading.grid(row=0, column=0)
     num.grid(row=1, column=0)
     lower.grid(row=3, column=0)
@@ -151,10 +120,9 @@ if __name__ == "__main__":
     climbLevel.grid(row=8, column=0, ipadx="25")
     school.grid(row=10, column=0, ipadx="25")
     studentOrParentLed.grid(row=12, column=0, ipadx="25") 
-    badExcel()
     goodExcel()
-    bad = Button(root, text="bad", fg="Black", bg="Red", command=bad)
-    bad.grid(row=14, column=0)
-    good = Button(root, text="good", fg="Black", bg="Green", command=good)
+    good = Button(root, text="Save", fg="Black", bg="Green", command=sheet)
     good.grid(row=15, column=0)
+    upload = Button(root, text="upload to drive", fg="light blue", bg="Black", command=updateFile)
+    upload.grid(row=16, column=0)
     root.mainloop()
