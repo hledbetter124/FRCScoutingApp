@@ -1,4 +1,8 @@
 # FRCScoutingApp
+
+**Brought to you by Team 5176- The Robobills**
+
+
 Python/Android application for Scouting at first robotics competitions. 
 This was probably an hours worth of boredom at school so don't judge the terrible styling. 
 
