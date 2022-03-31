@@ -3,7 +3,9 @@ Python/Android application for Scouting at first robotics competitions.
 This was probably an hours worth of boredom at school so don't judge the terrible styling. 
 
 Instructions:
-it's a python script so really all you need to know is it requires openpyxl, pydrive, and tkinter (pip3 install $PACKAGEE_NAME)
+requires openpyxl, pydrive, and tkinter (pip3 install $PACKAGEE_NAME)
+
+In order for google drive to work you have to create an oauth key and put the client_secrets.json in the root directory of the program. Everything else works fine without this.
 
 If you're on android and want a .apk that's coming soon, nothing upto release 0.2 works, and we'll see if I get around to fixing it before the competition. 
 
